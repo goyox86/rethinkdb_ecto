@@ -23,7 +23,8 @@ use Mix.Config
 
 config :rethinkdb_ecto, RethinkDB.EctoTest.Repo,
   adapter: RethinkDB.Ecto,
-  database: 'test'
+  database: "test",
+  host: "localhost"
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment

@@ -35,6 +35,9 @@ defmodule RethinkDB.EctoTest do
     # Start the Repo as worker of the supervisor tree
     Supervisor.start_link([worker(Repo, [])], strategy: :one_for_one)
 
+    # Create the table
+    RethinkDB.Query.table_create(:users) |> Repo.run
+
     # Clear table
     table("users")
     |> delete

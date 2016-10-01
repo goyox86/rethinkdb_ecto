@@ -39,7 +39,6 @@ defmodule RethinkDB.Ecto.Mixfile do
       source_url: "https://github.com/almightycouch/rethinkdb_ecto"]
   end
 
-
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:ecto, "~> 1.1"},

@@ -23,7 +23,9 @@ defmodule RethinkDB.Ecto do
 
   def start_link(repo, opts) do
     {:ok, _} = Application.ensure_all_started(:rethinkdb)
-    repo.__connection__.start_link(opts)
+    opts
+    |> preprocess_opts
+    |> repo.__connection__.start_link
   end
 
   def stop(repo, _pid, _timeout) do
@@ -110,9 +112,10 @@ defmodule RethinkDB.Ecto do
   end
 
   def storage_up(opts) do
+    opts = preprocess_opts(opts)
     repo = opts[:repo]
-    name = opts[:database]
-    start_link(repo, [])
+    name = opts[:db]
+    start_link(repo, opts)
 
     case(RethinkDB.Query.db_create(name) |> repo.run) do
       %{data: %{"r" => [error|_]}} ->
@@ -123,9 +126,10 @@ defmodule RethinkDB.Ecto do
   end
 
   def storage_down(opts) do
+    opts = preprocess_opts(opts)
     repo = opts[:repo]
-    name = opts[:database]
-    start_link(repo, [])
+    name = opts[:db]
+    start_link(repo, opts)
 
     case(RethinkDB.Query.db_drop(name) |> repo.run) do
       %{data: %{"r" => [error|_]}} ->
@@ -208,5 +212,11 @@ defmodule RethinkDB.Ecto do
 
   defp process_record(record, preprocess, expr) do
     Enum.map(expr, &preprocess.(&1, record, nil))
+  end
+
+  defp preprocess_opts(opts) do
+    opts
+    |> Keyword.put_new(:db, opts[:database])
+    |> Keyword.put_new(:host, opts[:hostname])
   end
 end
